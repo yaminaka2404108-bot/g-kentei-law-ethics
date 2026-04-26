@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>G検定 法律・倫理 フラッシュカード</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:#f0f2f7;color:#1a1a2e;display:flex;flex-direction:column}
+
+.hd{background:#2C3E50;color:#fff;padding:10px 16px 8px;flex-shrink:0}
+.hd-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.hd-title{font-size:14px;font-weight:600;flex:1}
+.hd-badge{background:#C9A84C;color:#1a1a2e;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.hd-pills{display:flex;gap:5px;flex-wrap:wrap}
+.pill{background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px;font-size:11px}
+.pill b{font-size:13px}
+
+.filter-wrap{background:#fff;border-bottom:1px solid #e0e4ee;padding:7px 12px;flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;scrollbar-width:none}
+.filter-wrap::-webkit-scrollbar{display:none}
+.filter-row{display:inline-flex;gap:5px;align-items:center}
+.fb{padding:5px 12px;border-radius:20px;border:1.5px solid #d0d4de;background:#fff;font-size:11px;cursor:pointer;color:#555;white-space:nowrap;font-family:inherit;transition:all .12s}
+.fb.on{background:#2C3E50;border-color:#2C3E50;color:#fff}
+.fb.imp3.on{background:#CC0000;border-color:#CC0000;color:#fff}
+.fb.imp2.on{background:#C9A84C;border-color:#C9A84C;color:#fff}
+.f-sep{width:1px;height:18px;background:#e0e4ee;margin:0 2px;flex-shrink:0}
+
+.prog-bar-bg{height:4px;background:#e0e4ec;flex-shrink:0}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,#2C3E50,#C9A84C);transition:width .3s}
+
+.score-line{display:flex;align-items:center;gap:4px;padding:4px 14px;font-size:11px;color:#888;flex-shrink:0;background:#fff;border-bottom:1px solid #e8eaf0}
+.seg{height:5px;border-radius:3px;min-width:0;transition:flex .3s}
+.seg-ok{background:#639922}
+.seg-ng{background:#CC0000}
+.seg-rest{background:#dde2f0;flex:1}
+
+.card-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 14px 6px;overflow:hidden}
+.card-scene{width:100%;max-width:500px;perspective:1000px}
+.card-wrap{position:relative;width:100%;height:330px;cursor:pointer;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,0,.2,1);user-select:none}
+.card-wrap.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:18px;padding:20px;display:flex;flex-direction:column}
+.face-front{background:#fff;box-shadow:0 4px 24px rgba(0,0,0,.10);border:1.5px solid #e8eaef}
+.face-back{background:#2C3E50;transform:rotateY(180deg)}
+
+.card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.ch-tag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.ch-tag.law{background:#FEF3E8;color:#A0522D}
+.ch-tag.eth{background:#EFF8F1;color:#2D6A4F}
+.sec-tag{font-size:10px;color:#999;padding:3px 8px;border-radius:20px;background:#f4f6f9;white-space:nowrap}
+.imp-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:auto;white-space:nowrap}
+.i3{background:#FFCCCC;color:#CC0000}
+.i2{background:#FFF3CD;color:#856404}
+.i1{background:#eee;color:#888}
+.card-num{font-size:11px;color:#bbb;margin-bottom:8px}
+.card-q{font-size:15px;font-weight:500;line-height:1.65;color:#1a1a2e;flex:1;overflow-y:auto}
+.tap-hint{font-size:11px;color:#ccc;text-align:center;margin-top:10px}
+
+.face-back .ch-tag.law{background:rgba(201,168,76,.25);color:#C9A84C}
+.face-back .ch-tag.eth{background:rgba(86,184,134,.2);color:#56B886}
+.face-back .sec-tag{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55)}
+.ans-label{font-size:11px;font-weight:600;color:#C9A84C;letter-spacing:.5px;margin-bottom:10px}
+.card-a{font-size:13px;line-height:1.75;color:#fff;flex:1;overflow-y:auto}
+.face-back .tap-hint{color:rgba(255,255,255,.3)}
+
+.swipe-hint{font-size:11px;color:#bbb;text-align:center;padding:3px 0;flex-shrink:0}
+
+.judge-row{display:flex;gap:12px;padding:8px 16px;flex-shrink:0}
+.jbtn{flex:1;padding:13px 0;border-radius:14px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .1s,opacity .1s;display:none;box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.jbtn.show{display:block}
+.jbtn:active{transform:scale(.96)}
+.jbtn-ng{background:#FFCCCC;color:#CC0000}
+.jbtn-ok{background:#E2EFDA;color:#27500A}
+
+.nav-row{display:flex;gap:8px;padding:0 16px 14px;flex-shrink:0;align-items:center}
+.nav-btn{flex:1;padding:10px 0;border-radius:12px;border:1.5px solid #d0d4de;background:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;color:#333;transition:all .12s}
+.nav-btn:active{background:#f5f0e8}
+.nav-btn:disabled{opacity:.3;cursor:default}
+.nav-mid{flex:2;display:flex;gap:6px}
+.ctrl-btn{flex:1;padding:10px 0;border-radius:12px;border:1.5px solid #d0d4de;background:#fff;font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;color:#333;text-align:center}
+.ctrl-btn.sh{background:#2C3E50;border-color:#2C3E50;color:#fff}
+.ctrl-btn.ng-btn{border-color:#e88;color:#c33}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:20px}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;padding:26px 22px;width:100%;max-width:380px;text-align:center}
+.modal h2{font-size:17px;color:#2C3E50;margin-bottom:4px}
+.modal .big{font-size:50px;font-weight:700;color:#2C3E50;line-height:1.2;margin:10px 0}
+.modal .sub{font-size:12px;color:#888;margin-bottom:16px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.rc{padding:10px;border-radius:10px;background:#f4f6f9;font-size:12px;color:#666}
+.rc strong{display:block;font-size:20px;font-weight:700;margin-top:3px}
+.mbtn{display:block;width:100%;padding:12px;border-radius:12px;border:1.5px solid #d0d4de;background:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:7px;color:#333}
+.mbtn.pri{background:#2C3E50;border-color:#2C3E50;color:#fff}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hd-top">
+    <div class="hd-title">G検定 法律・倫理フラッシュカード</div>
+    <div class="hd-badge">法律・倫理分野</div>
+  </div>
+  <div class="hd-pills">
+    <div class="pill">残り <b id="s-rem">44</b></div>
+    <div class="pill">○ <b id="s-ok">0</b></div>
+    <div class="pill">✕ <b id="s-ng">0</b></div>
+    <div class="pill">正解率 <b id="s-pct">—</b></div>
+  </div>
+</div>
+
+<div class="filter-wrap">
+  <div class="filter-row" id="filter-row">
+    <button class="fb on" onclick="setCh(this,'all')">全分野</button>
+    <button class="fb" onclick="setCh(this,'法律分野')">法律分野</button>
+    <button class="fb" onclick="setCh(this,'倫理分野')">倫理分野</button>
+    <div class="f-sep"></div>
+    <button class="fb imp3" onclick="setImp(this,'★★★')">★★★</button>
+    <button class="fb imp2" onclick="setImp(this,'★★☆')">★★☆</button>
+    <button class="fb on" onclick="setImp(this,'all')" id="imp-all-btn">全重要度</button>
+  </div>
+</div>
+
+<div class="prog-bar-bg"><div class="prog-bar-fill" id="prog" style="width:0%"></div></div>
+
+<div class="score-line">
+  <span style="white-space:nowrap;margin-right:4px">進捗</span>
+  <div class="seg seg-ok" id="sg-ok" style="flex:0"></div>
+  <div class="seg seg-ng" id="sg-ng" style="flex:0"></div>
+  <div class="seg seg-rest" id="sg-rest"></div>
+  <span style="margin-left:6px;white-space:nowrap" id="prog-txt">0/0</span>
+</div>
+
+<div class="card-area">
+  <div class="card-scene">
+    <div class="card-wrap" id="cw" onclick="flip()">
+      <div class="face face-front">
+        <div class="card-tags">
+          <span class="ch-tag" id="f-ch"></span>
+          <span class="sec-tag" id="f-sec"></span>
+          <span class="imp-tag" id="f-imp"></span>
+        </div>
+        <div class="card-num" id="f-num"></div>
+        <div class="card-q" id="f-q"></div>
+        <div class="tap-hint">タップで答えを確認</div>
+      </div>
+      <div class="face face-back">
+        <div class="card-tags">
+          <span class="ch-tag" id="b-ch"></span>
+          <span class="sec-tag" id="b-sec"></span>
+          <span class="imp-tag" id="b-imp"></span>
+        </div>
+        <div class="ans-label">▼ 答え・解説</div>
+        <div class="card-a" id="b-a"></div>
+        <div class="tap-hint">自己採点してください</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="swipe-hint" id="swipe-hint">← 左右スワイプで前後に移動</div>
+
+<div class="judge-row">
+  <button class="jbtn jbtn-ng" id="btn-ng" onclick="judge(false)">✕ 不正解</button>
+  <button class="jbtn jbtn-ok" id="btn-ok" onclick="judge(true)">○ 正解</button>
+</div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>←</button>
+  <div class="nav-mid">
+    <button class="ctrl-btn sh" onclick="doShuffle()">シャッフル</button>
+    <button class="ctrl-btn ng-btn" id="btn-retry" style="display:none" onclick="retryWrong()">苦手再挑戦</button>
+    <button class="ctrl-btn" onclick="resetAll()">リセット</button>
+  </div>
+  <button class="nav-btn" id="btn-next" onclick="go(1)">→</button>
+</div>
+
+<div class="overlay" id="modal">
+  <div class="modal">
+    <h2>セット完了！</h2>
+    <div class="big" id="m-pct">0%</div>
+    <div class="sub" id="m-sub"></div>
+    <div class="result-grid">
+      <div class="rc">正解 <strong id="m-ok" style="color:#27500A"></strong></div>
+      <div class="rc">不正解 <strong id="m-ng" style="color:#CC0000"></strong></div>
+    </div>
+    <button class="mbtn" onclick="closeM();retryWrong()">✕ 不正解だけ再挑戦</button>
+    <button class="mbtn" onclick="closeM();doShuffle()">シャッフルして再挑戦</button>
+    <button class="mbtn pri" onclick="closeM();resetAll()">最初からやり直す</button>
+  </div>
+</div>
+
+<script>
+const ALL=[{"id": 1, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節1", "sec_name": "個人情報保護法", "q": "個人情報保護法における「個人情報」の定義を述べよ。また、AIによる顔認識データはなぜ個人情報に該当するか説明せよ。", "a": "生存する特定の個人を識別できる情報。氏名・生年月日のほか、個人識別符号（顔認証データ・指紋等の生体情報）も個人情報に該当する。顔認識データはそれ単体で個人を特定できる個人識別符号であるため個人情報となる。", "imp": "★★★"}, {"id": 2, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節1", "sec_name": "個人情報保護法", "q": "「匿名加工情報」と「仮名加工情報」の違いを、第三者提供の可否に触れながら説明せよ。", "a": "匿名加工情報：特定の個人を識別できず復元も不可能な情報→本人同意なしに第三者提供・公表が可能。仮名加工情報：他の情報と照合しなければ特定できない情報（復元可能性残る）→第三者提供は原則不可で内部分析に限定。", "imp": "★★★"}, {"id": 3, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節1", "sec_name": "個人情報保護法", "q": "要配慮個人情報とは何か。具体例を3つ挙げ、AI利用上の注意点を述べよ。", "a": "人種・信条・病歴・犯罪歴・障害など、不当な差別や偏見が生じうる情報。例：病歴・障害の有無・犯罪歴。AI学習データに含める場合は原則として本人の明示的な同意が必要。センシティブ属性に直結するため特に注意が必要。", "imp": "★★★"}, {"id": 4, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節1", "sec_name": "個人情報保護法", "q": "GDPRとはどのような規則か。日本企業にも適用される場合があるか説明せよ。", "a": "EUの一般データ保護規則（General Data Protection Regulation）。EUに在住する人のデータを扱う企業に適用され、EEA域外の日本企業もEU向けサービスを提供する場合は対象となる。「忘れられる権利」「データポータビリティ権」を規定。", "imp": "★★★"}, {"id": 5, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節1", "sec_name": "個人情報保護法", "q": "個人情報をAI学習データとして外部ベンダーに提供する際、第三者提供の例外として使える仕組みは何か。", "a": "「委託」の場合は第三者提供に該当しない（本人同意不要）。ただし委託元は委託先を適切に監督する義務を負う。安全管理措置を委託契約に明記し、委託先の監査・管理が必要。", "imp": "★★★"}, {"id": 6, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節2", "sec_name": "著作権法", "q": "AIが生成した絵画や文章に著作権は発生するか。「創作性」の観点から説明せよ。", "a": "著作権は「人間の創作的表現」を保護するもの。AIのみが自律的に生成した場合は著作権は発生しない。ただし、人間がプロンプト設計・構成・選択・修正などに創作的に関与した場合は人間の著作物として認められる可能性がある。", "imp": "★★★"}, {"id": 7, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節2", "sec_name": "著作権法", "q": "著作権法30条の4（情報解析目的の複製）はAI開発にどのように関係するか。", "a": "著作権法30条4は、機械学習等の情報解析を目的とする場合は著作権者の許諾なしに著作物を複製できることを認める規定。AIの学習データ収集に活用できるが、享受目的の利用には及ばないため出力物の扱いには注意が必要。", "imp": "★★★"}, {"id": 8, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節2", "sec_name": "著作権法", "q": "AIが既存の著作物に酷似したコンテンツを生成した場合、著作権侵害となる可能性はあるか。", "a": "あり得る。AIが生成した出力物が既存著作物に依拠して複製・翻案したと評価できる場合は著作権侵害となりうる。ただし学習データに含まれていただけでは直ちに侵害とはならない点も議論されている。", "imp": "★★★"}, {"id": 9, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節3", "sec_name": "特許法", "q": "特許権と著作権の主な違いを3点述べよ。", "a": "①登録：特許権は出願・審査・登録が必要→著作権は創作時に自動発生。②保護期間：特許は出願から20年→著作権は原則死後70年。③保護対象：特許は技術的思想（アイデア）→著作権は表現。", "imp": "★★★"}, {"id": 10, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節3", "sec_name": "特許法", "q": "AIを活用して発明した場合、AIを発明者として特許出願できるか。職務発明の観点からも説明せよ。", "a": "現行法では発明者は自然人（人間）に限られるため、AIは発明者になれない。AIが支援した発明でも人間の創作的関与がある場合は人間が発明者となる。職務発明として使用者（企業）が権利を承継するケースが多い。", "imp": "★★☆"}, {"id": 11, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節3", "sec_name": "特許法", "q": "「営業秘密」で保護する場合と「特許権」で保護する場合の違いを述べよ。", "a": "特許：公開が前提→独占排他権を得る（出願から20年）。営業秘密：非公開で秘密管理することが要件→保護期間は無制限だが技術が漏洩・独立開発されれば保護できない。AIのモデル・アルゴリズムはブラックボックスのまま営業秘密化することが多い。", "imp": "★★★"}, {"id": 12, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節4", "sec_name": "不正競争防止法", "q": "営業秘密として保護されるための三要件を述べよ。", "a": "①秘密管理性：秘密として管理されていること（パスワード・アクセス制限等）。②有用性：事業活動に有用な技術・営業上の情報であること。③非公知性：公に知られていないこと。三要件を全て満たす情報のみが不正競争防止法で保護される。", "imp": "★★★"}, {"id": 13, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節4", "sec_name": "不正競争防止法", "q": "「限定提供データ」とは何か。営業秘密との違いを述べよ。", "a": "限定提供データ：業として特定の者に有償・無償で提供するデータとして管理されるもの（IoTデータ等）。非公知性不要→ビッグデータ・共有データにも適用可能。営業秘密は非公知性が必須で秘密として管理するものに限定される。", "imp": "★★★"}, {"id": 14, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節5", "sec_name": "独占禁止法", "q": "AIと独占禁止法に関して、どのような行為が問題となりうるか説明せよ。", "a": "①プラットフォーマーによるデータ寡占で市場参入障壁を形成する行為。②AIアルゴリズムを用いた価格協調（アルゴリズム共謀）。③自社AIサービスへの囲い込みによる競争排除。これらが公正競争阻害性を持つ場合に独占禁止法違反となりうる。", "imp": "★★☆"}, {"id": 15, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節6", "sec_name": "AI開発委託契約", "q": "AI開発の「PoC」「開発」「運用」の各フェーズに適切な契約形態は何か。理由と共に説明せよ。", "a": "PoC：準委任契約（探索的で成果保証が困難なため、善管注意義務のみ）。開発フェーズ：請負契約または準委任契約（成果物が明確なら請負、反復試行が必要なら準委任）。運用：保守契約（継続的なモデル管理・再学習対応）。", "imp": "★★★"}, {"id": 16, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節6", "sec_name": "AI開発委託契約", "q": "AI開発委託契約における「精度保証」の問題点を述べよ。", "a": "AIの精度は学習データの質・量・分布に依存し、一定値を保証することが技術的に困難。請負契約で「精度◯%以上」を約束すると未達時に契約不適合責任が生じる。実務では「精度保証しない旨の免責規定」を盛り込む、または準委任契約を選択することが多い。", "imp": "★★★"}, {"id": 17, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節6", "sec_name": "AI開発委託契約", "q": "AI開発委託時にNDA（秘密保持契約）を締結する主な理由と、主要条項を説明せよ。", "a": "AI開発では発注者のデータ・ノウハウをベンダーに開示するため、機密情報の外部漏洩を防ぐ目的で締結。主要条項：①秘密情報の定義②目的外使用禁止③情報管理義務④契約終了後の情報返却・廃棄義務⑤有効期間。", "imp": "★★☆"}, {"id": 18, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節6", "sec_name": "AI開発委託契約", "q": "AI学習済みモデルの知的財産権は、ベンダーとユーザーのどちらに帰属するか。経済産業省ガイドラインの立場を述べよ。", "a": "経産省「AI・データの利用に関する契約ガイドライン」では、モデルの知財帰属はベンダー・ユーザー双方の協議で決定すべきとし、デフォルトを定めない。ユーザーが学習データを提供した場合はユーザー帰属を主張しやすいが、学習技術はベンダー帰属が多い。", "imp": "★★★"}, {"id": 19, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節7", "sec_name": "AIサービス提供契約", "q": "SaaS型AIサービスを利用する際、ユーザーが契約前に利用規約で確認すべき主要事項を述べよ。", "a": "①ユーザーが入力したデータをサービス提供者がAI学習に使用するか（データ利用権の範囲）。②生成物の著作権の帰属。③精度保証の有無と免責範囲。④サービス停止・変更時のデータ移行権。⑤秘密情報の取り扱い方針。", "imp": "★★★"}, {"id": 20, "ch": "法律分野", "ch_name": "AIに関する法律と契約", "sec": "節7", "sec_name": "AIサービス提供契約", "q": "SaaS型AIサービスが通常のシステム開発委託と異なる点を述べよ。", "a": "①利用規約がほぼ全ての契約条件を規定し個別交渉の余地が少ない。②知的財産権がサービス提供者側に残ることが多い。③精度保証が困難なため免責条項が広範。④マルチテナント環境のためカスタマイズに制限がある。⑤サービス継続性（廃止リスク）の考慮が必要。", "imp": "★★☆"}, {"id": 21, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節8", "sec_name": "国内外のガイドライン", "q": "「ハードロー」と「ソフトロー」の違いを述べよ。AIガバナンスにおけるそれぞれのメリット・デメリットも説明せよ。", "a": "ハードロー：法律として強制力・罰則あり（EU AI法が典型）。メリット：実効性高い。デメリット：技術革新の妨げになりうる。ソフトロー：ガイドライン・自主規制で法的強制力なし（日本・米国が典型）。メリット：柔軟・革新促進。デメリット：拘束力が弱く遵守率が低い可能性。", "imp": "★★★"}, {"id": 22, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節8", "sec_name": "国内外のガイドライン", "q": "「リスクベースアプローチ」とはAIガバナンスにおいてどのような考え方か。EU AI法の例で説明せよ。", "a": "AIのリスクを用途・影響の大きさで段階分類し、リスクに応じた規制を適用するアプローチ。EU AI法では①禁止（社会信用スコアリング等）②高リスク（採用・医療等）③限定リスク（チャットボット等）④最小リスク（スパムフィルタ等）の4段階に分類。", "imp": "★★★"}, {"id": 23, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節8", "sec_name": "国内外のガイドライン", "q": "OECDのAI原則（AI勧告）で共通に議論される価値原則を5点挙げよ。", "a": "①包摂的成長・持続可能な発展・幸福。②人間中心の価値観と公平性。③透明性と説明可能性。④頑健性・セキュリティ・安全性。⑤説明責任（Accountability）。これら5原則は国内外の多くのAIガイドラインの基盤となっている。", "imp": "★★★"}, {"id": 24, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節9", "sec_name": "プライバシー", "q": "「プライバシー・バイ・デザイン」の考え方を説明せよ。7原則のうち3つを挙げよ。", "a": "システム設計の段階からプライバシー保護を組み込む原則（アン・カブキアン提唱）。7原則の例：①事後的でなく事前対応（Proactive not Reactive）。②プライバシーをデフォルト設定に（Privacy as Default）。③設計にプライバシーを組み込む（Privacy Embedded into Design）。", "imp": "★★★"}, {"id": 25, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節9", "sec_name": "プライバシー", "q": "カメラ画像を活用するAIシステムでプライバシー上留意すべき事項を述べよ。", "a": "①カメラで特定個人が識別できる場合は個人情報として取り扱う。②撮影目的・利用範囲を事前に通知・掲示する。③画像データの保存期間・アクセス制限を適切に設定する。④経産省・総務省「カメラ画像利活用ガイドブック」に沿った対応が推奨される。", "imp": "★★☆"}, {"id": 26, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節10", "sec_name": "公平性", "q": "「アルゴリズムバイアス」が生じる主な原因を2つ挙げ、それぞれの対策を述べよ。", "a": "①学習データの偏り（サンプリングバイアス）→多様なデータ収集・データ拡張・再重み付けで対策。②センシティブ属性の間接的影響（代理変数）→センシティブ属性と相関する変数を除去または再重み付けする。どちらも根本的除去は困難で継続的モニタリングが必要。", "imp": "★★★"}, {"id": 27, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節10", "sec_name": "公平性", "q": "「代理変数」の問題を具体例を用いて説明せよ。", "a": "センシティブ属性（人種・性別等）を直接使用しなくても、郵便番号・購買履歴・学歴などがそれと相関する変数（代理変数）として機能し、間接的に差別的判断を引き起こす問題。例：郵便番号がある人種の居住地に相関→ローン審査AIが間接的に人種差別的判断をする。", "imp": "★★★"}, {"id": 28, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節10", "sec_name": "公平性", "q": "AIの公平性指標には複数の定義があり、それらを同時に満たすことが数学的に不可能なことを何と呼ぶか。また、公平性の3つの定義を挙げよ。", "a": "「公平性の不可能定理（Fairness Impossibility Theorem）」と呼ぶ。主な定義：①人口統計学的均等（Demographic Parity）：グループ間で陽性率が等しい。②均等機会（Equal Opportunity）：真陽性率が等しい。③較正（Calibration）：予測確率とグループ間で一致。", "imp": "★★★"}, {"id": 29, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節11", "sec_name": "安全性とセキュリティ", "q": "「Adversarial Attack（敵対的攻撃）」とは何か。具体例と対策を述べよ。", "a": "人間には知覚できないほどの微小なノイズを画像等の入力に加え、AIを意図的に誤分類させる攻撃。例：パンダ画像にノイズを加えるとテナガザルと判定させられる（Goodfellow 2014）。対策：敵対的学習（Adversarial Training）・入力検証・ロバスト化。", "imp": "★★★"}, {"id": 30, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節11", "sec_name": "安全性とセキュリティ", "q": "「データ汚染（Poisoning Attack）」と「モデル窃取（Model Stealing）」の違いを説明せよ。", "a": "データ汚染：学習データに悪意あるサンプルを混入し、訓練済みモデルに特定の誤動作（バックドア）を埋め込む攻撃。学習フェーズへの攻撃。モデル窃取：大量のクエリを送りAPIの応答からモデルを複製・模倣する攻撃。推論フェーズへの攻撃で知財侵害にもなりうる。", "imp": "★★★"}, {"id": 31, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節11", "sec_name": "安全性とセキュリティ", "q": "「セキュリティ・バイ・デザイン」の考え方を説明し、AIシステムへの適用例を述べよ。", "a": "セキュリティ対策をシステム設計段階から組み込む考え方（後付け対応でなく設計原則として内包）。AIへの適用例：入力バリデーションの設計・アクセス制御のデフォルト設定・学習データのアクセスログ記録・推論APIのレートリミット設定。", "imp": "★★★"}, {"id": 32, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節12", "sec_name": "悪用", "q": "「ディープフェイク」とは何か。社会的リスクと対応策を述べよ。", "a": "GANなどのAIを用いて人物の顔・声・動画を合成・改ざんする技術。リスク：政治家・著名人の偽動画による世論操作、性的フェイク画像による名誉毀損、詐欺への悪用。対策：ディープフェイク検出AI（Detectability）の開発、プラットフォームでのコンテンツモデレーション、法的規制（改正不正競争防止法等）。", "imp": "★★★"}, {"id": 33, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節12", "sec_name": "悪用", "q": "フェイクニュースにAIが与えている影響を説明し、対策技術を述べよ。", "a": "生成AIにより低コスト・大量のフェイクニュース生成が可能になった。SNSのアルゴリズムが感情的なコンテンツを優先して拡散させる問題も複合する。対策：ファクトチェックAI・透かし技術（Watermarking）・コンテンツ来歴管理（C2PA規格）・デジタルリテラシー教育。", "imp": "★★★"}, {"id": 34, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節13", "sec_name": "透明性", "q": "AIの「説明可能性（Explainability）」が求められる背景と、代表的な説明手法を2つ挙げよ。", "a": "背景：GDPRの「説明を受ける権利」・採用・融資・医療などの高リスク意思決定へのAI適用の拡大で、判断根拠の提示が倫理的・法的に求められる。代表手法：①LIME（局所近似モデルで個別予測を説明）②SHAP（Shapley値に基づく特徴量寄与度の算出）。", "imp": "★★★"}, {"id": 35, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節13", "sec_name": "透明性", "q": "「ブラックボックス問題」を説明し、それが高精度モデルと矛盾する理由を述べよ。", "a": "ディープニューラルネットワーク等では入出力の関係が複雑すぎて人間が判断根拠を理解できない状態（ブラックボックス）。高精度を実現するモデルほど複雑になり透明性が低下する傾向がある（精度と解釈性のトレードオフ）。", "imp": "★★★"}, {"id": 36, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節14", "sec_name": "民主主義", "q": "「フィルターバブル」と「エコーチェンバー」の違いを説明せよ。", "a": "フィルターバブル：AIのパーソナライズアルゴリズムが利用者の好みに合った情報だけを提示し、異なる意見から隔離する状態（アルゴリズム起因）。エコーチェンバー：同質の意見を持つ人々のコミュニティで意見が増幅・強化される社会的現象（人間の行動起因）。両者は複合して民主主義・多様性を損なう。", "imp": "★★★"}, {"id": 37, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節15", "sec_name": "環境保護", "q": "大規模な深層学習モデルの学習が環境問題と関連する理由と、対応策（Green AI）を述べよ。", "a": "理由：大規模モデル（GPT-3等）の学習には膨大なGPU計算が必要で、データセンターの電力消費・CO₂排出量が増大する。Green AIの対策：①計算効率の高いアーキテクチャ（モデル圧縮・蒸留）②再生可能エネルギーでのデータセンター運用③必要最小限のモデル規模の採用。", "imp": "★★☆"}, {"id": 38, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節16", "sec_name": "労働政策", "q": "AIによる雇用への影響について、「代替」と「協働」の視点から論じよ。", "a": "代替の懸念：ルーティン的・定型的業務はAIが代替し失業が生じる可能性。協働の視点：AIは人間の業務を支援・拡張するものとして位置づけ、創造的・対人的業務には人間の優位性が残る。スキルの喪失リスク（自動操縦依存による操縦技術低下等）にも注意が必要。", "imp": "★★☆"}, {"id": 39, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節17", "sec_name": "その他の重要な価値", "q": "「自律型致死兵器システム（LAWS）」のAI倫理上の問題点を述べよ。", "a": "殺傷の意思決定をAIが自律的に行う兵器（ドローン等）は、①戦闘員・民間人の区別の判断エラー、②AI誤判断の責任帰属の曖昧さ、③人間の尊厳・生命に関わる意思決定から人間を排除することへの倫理的問題、④軍拡競争・紛争拡大リスクを生む。国際的な規制議論が継続中。", "imp": "★★★"}, {"id": 40, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節17", "sec_name": "その他の重要な価値", "q": "「インクルージョン」とAI倫理の関係を説明せよ。", "a": "AIシステムが障害者・高齢者・言語的マイノリティ等を含む全ての人々にとってアクセス可能で恩恵をもたらすべきという原則。AI設計時にユニバーサルデザイン・バリアフリーを考慮しないと、特定集団が技術から排除（デジタルデバイド）される問題が生じる。", "imp": "★★☆"}, {"id": 41, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節18", "sec_name": "AIガバナンス", "q": "「倫理アセスメント」とは何か。実施タイミングと評価項目の例を述べよ。", "a": "AIシステムが倫理的リスクを持つかを評価するプロセス。実施タイミング：設計・開発・テスト・運用の各フェーズ。評価項目例：①公平性（バイアスの有無）②プライバシー（個人情報の取り扱い）③透明性（説明可能性）④安全性（セキュリティ）⑤法的コンプライアンス。", "imp": "★★★"}, {"id": 42, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節18", "sec_name": "AIガバナンス", "q": "「Human-in-the-Loop（HITL）」とはどのような考え方か。高リスクAIへの適用理由を述べよ。", "a": "重要な意思決定においてAIの判断を人間が確認・承認・修正するプロセスを組み込む設計原則。採用選考・融資・医療診断などの高リスクAIでは、誤判断の影響が大きいため、人間が最終判断者として介在する仕組みが倫理的・法的に求められる。", "imp": "★★★"}, {"id": 43, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節18", "sec_name": "AIガバナンス", "q": "「トレーサビリティ」と「再現性」の違いと、AIガバナンス上の意義を述べよ。", "a": "トレーサビリティ：学習データ・モデル・判断結果の履歴を追跡可能にする仕組み（データの来歴管理等）。再現性：同じ設定でAIを再学習した際に同等の結果が得られる性質。どちらも問題発生時の原因特定・監査・説明責任の履行に不可欠で、信頼できるAIの基盤となる。", "imp": "★★☆"}, {"id": 44, "ch": "倫理分野", "ch_name": "AI倫理・AIガバナンス", "sec": "節18", "sec_name": "AIガバナンス", "q": "企業がAIガバナンスを実装するための組織的手法を3つ挙げよ。", "a": "①AIポリシーの策定・公表（倫理原則・行動規範の明文化）。②多様なメンバーによる倫理審査委員会の設置（ダイバーシティ確保）。③継続的なAIシステムのモニタリング体制の構築（精度劣化・バイアス・セキュリティ異常の検出）。④第三者による定期的なAI監査の実施。", "imp": "★★★"}];
+let deck=[],cur=0,results={},chF='all',impF='all',isFlipped=false;
+
+function filtered(){return ALL.filter(d=>chF==='all'||d.ch===chF).filter(d=>impF==='all'||d.imp===impF);}
+function build(ids){deck=ids||filtered().map(d=>d.id);cur=0;isFlipped=false;render();}
+function render(){
+  if(!deck.length){updateStats();return;}
+  if(cur>=deck.length){showModal();return;}
+  const d=ALL.find(x=>x.id===deck[cur]);
+  const cw=document.getElementById('cw');
+  cw.classList.remove('flipped');isFlipped=false;
+  const isLaw=d.ch==='法律分野';
+  ['f-ch','b-ch'].forEach(id=>{const el=document.getElementById(id);el.textContent=d.ch;el.className='ch-tag '+(isLaw?'law':'eth');});
+  ['f-sec','b-sec'].forEach(id=>document.getElementById(id).textContent=d.sec+' '+d.sec_name);
+  const ic=d.imp==='★★★'?'i3':d.imp==='★★☆'?'i2':'i1';
+  ['f-imp','b-imp'].forEach(id=>{const el=document.getElementById(id);el.textContent=d.imp;el.className='imp-tag '+ic;});
+  document.getElementById('f-num').textContent='No.'+d.id;
+  document.getElementById('f-q').textContent=d.q;
+  document.getElementById('b-a').textContent=d.a;
+  showJudge(false);
+  document.getElementById('btn-prev').disabled=cur===0;
+  document.getElementById('btn-next').disabled=cur>=deck.length-1;
+  updateStats();
+}
+function flip(){isFlipped=!isFlipped;document.getElementById('cw').classList.toggle('flipped',isFlipped);showJudge(isFlipped);}
+function showJudge(v){
+  document.getElementById('btn-ok').className='jbtn jbtn-ok'+(v?' show':'');
+  document.getElementById('btn-ng').className='jbtn jbtn-ng'+(v?' show':'');
+}
+function judge(ok){results[deck[cur]]=ok;updateStats();setTimeout(()=>{cur++;render();},180);}
+function go(d){cur=Math.max(0,Math.min(deck.length-1,cur+d));isFlipped=false;render();}
+function doShuffle(){
+  let ids=filtered().map(d=>d.id);
+  for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]];}
+  results={};build(ids);
+}
+function retryWrong(){
+  const w=Object.entries(results).filter(([k,v])=>!v).map(([k])=>parseInt(k));
+  if(!w.length){alert('不正解の問題はありません！');return;}
+  results={};build(w);
+}
+function resetAll(){results={};build();}
+function setCh(btn,ch){
+  chF=ch;
+  document.querySelectorAll('.filter-row .fb:not(.imp3):not(.imp2):not(#imp-all-btn)').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');results={};build();
+}
+function setImp(btn,imp){
+  impF=imp;
+  document.querySelectorAll('.fb.imp3,.fb.imp2,#imp-all-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');results={};build();
+}
+function updateStats(){
+  const total=deck.length,ans=Object.keys(results).length;
+  const ok=Object.values(results).filter(v=>v).length;
+  const ng=Object.values(results).filter(v=>!v).length;
+  const pct=ans>0?Math.round(ok/ans*100):null;
+  document.getElementById('s-rem').textContent=total-ans;
+  document.getElementById('s-ok').textContent=ok;
+  document.getElementById('s-ng').textContent=ng;
+  document.getElementById('s-pct').textContent=pct!==null?pct+'%':'—';
+  document.getElementById('prog').style.width=(total>0?ans/total*100:0)+'%';
+  document.getElementById('prog-txt').textContent=ans+'/'+total;
+  document.getElementById('sg-ok').style.flex=ok;
+  document.getElementById('sg-ng').style.flex=ng;
+  document.getElementById('sg-rest').style.flex=total-ans;
+  document.getElementById('btn-retry').style.display=ng>0?'block':'none';
+}
+function showModal(){
+  const ans=Object.keys(results).length;
+  const ok=Object.values(results).filter(v=>v).length;
+  const ng=Object.values(results).filter(v=>!v).length;
+  const pct=ans>0?Math.round(ok/ans*100):0;
+  document.getElementById('m-pct').textContent=pct+'%';
+  document.getElementById('m-sub').textContent=ans+'問中 正解'+ok+'問 / 不正解'+ng+'問';
+  document.getElementById('m-ok').textContent=ok+'問';
+  document.getElementById('m-ng').textContent=ng+'問';
+  document.getElementById('modal').classList.add('show');
+}
+function closeM(){document.getElementById('modal').classList.remove('show');}
+let tx=0;
+document.getElementById('cw').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.getElementById('cw').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>40){if(dx<0&&cur<deck.length-1)go(1);else if(dx>0&&cur>0)go(-1);}
+},{passive:true});
+build();
+</script>
+</body>
+</html>
