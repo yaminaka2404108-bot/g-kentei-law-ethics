@@ -1,0 +1,1 @@
+# g-kentei-law-ethics
